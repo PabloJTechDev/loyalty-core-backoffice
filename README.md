@@ -27,6 +27,30 @@ The heavy lifting (points data, customer profiles) lives in `core-points`. This 
 
 ---
 
+## Architecture
+
+Clean Architecture with Go journey packages under `internal/`:
+
+```
+internal/
+  shared/          → WriteJSON, WithMetrics, LogEvent, Prometheus metrics
+  health/          → handler + types  (GET /health)
+  capabilities/    → handler + types  (GET /v1/backoffice-capabilities)
+  alerts/          → handler + types  (GET /v1/operational-alerts)
+main.go            → route wiring, graceful shutdown
+```
+
+Each journey package follows the same layering:
+
+| File | Responsibility |
+|---|---|
+| `types.go` | Response structs and domain defaults |
+| `handler.go` | HTTP handler (calls defaults or use cases, writes JSON) |
+
+Dependency injection is done by constructor functions in `main.go` — no framework.
+
+---
+
 ## Tech stack
 
 - **Go** (stdlib `net/http`)
